@@ -13,7 +13,7 @@ const theme = createTheme({
         allVariants: {
             fontFamily: `'Work Sans', sans-serif`,
         },
-    }
+    },
 });
 
 export default theme;
