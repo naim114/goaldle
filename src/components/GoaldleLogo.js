@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Container, Grid, Typography } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 
 function GoaldleLogo() {
     return (

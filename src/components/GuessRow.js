@@ -10,10 +10,10 @@ function GuessRow(props) {
     let nameColor = 'black';
     let nameBg = '#edeae5';
 
-    if (props.nameStatus == 'success') {
+    if (props.nameStatus === 'success') {
         nameColor = 'white';
         nameBg = success;
-    } else if (props.nameStatus == 'warning') {
+    } else if (props.nameStatus === 'warning') {
         nameColor = 'black';
         nameBg = warning;
     }
@@ -22,10 +22,10 @@ function GuessRow(props) {
     let teamColor = 'black';
     let teamBg = '#edeae5';
 
-    if (props.teamStatus == 'success') {
+    if (props.teamStatus === 'success') {
         teamColor = 'white';
         teamBg = success;
-    } else if (props.teamStatus == 'warning') {
+    } else if (props.teamStatus === 'warning') {
         teamColor = 'black';
         teamBg = warning;
     }
@@ -34,10 +34,10 @@ function GuessRow(props) {
     let posColor = 'black';
     let posBg = '#edeae5';
 
-    if (props.posStatus == 'success') {
+    if (props.posStatus === 'success') {
         posColor = 'white';
         posBg = success;
-    } else if (props.posStatus == 'warning') {
+    } else if (props.posStatus === 'warning') {
         posColor = 'black';
         posBg = warning;
     }
@@ -46,10 +46,10 @@ function GuessRow(props) {
     let countryColor = 'black';
     let countryBg = '#edeae5';
 
-    if (props.countryStatus == 'success') {
+    if (props.countryStatus === 'success') {
         countryColor = 'white';
         countryBg = success;
-    } else if (props.countryStatus == 'warning') {
+    } else if (props.countryStatus === 'warning') {
         countryColor = 'black';
         countryBg = warning;
     }
@@ -59,15 +59,15 @@ function GuessRow(props) {
     let ageBg = '#edeae5';
     let ageArrow = '';
 
-    if (props.ageStatus == 'success') {
+    if (props.ageStatus === 'success') {
         ageColor = 'white';
         ageBg = success;
         ageArrow = '';
-    } else if (props.ageStatus == 'high') {
+    } else if (props.ageStatus === 'high') {
         ageColor = 'black';
         ageBg = warning;
         ageArrow = ' ↑';
-    } else if (props.ageStatus == 'low') {
+    } else if (props.ageStatus === 'low') {
         ageColor = 'black';
         ageBg = warning;
         ageArrow = ' ↓';
@@ -78,15 +78,15 @@ function GuessRow(props) {
     let numBg = '#edeae5';
     let numArrow = '';
 
-    if (props.numStatus == 'success') {
+    if (props.numStatus === 'success') {
         numColor = 'white';
         numBg = success;
         numArrow = '';
-    } else if (props.numStatus == 'high') {
+    } else if (props.numStatus === 'high') {
         numColor = 'black';
         numBg = warning;
         numArrow = ' ↑';
-    } else if (props.numStatus == 'low') {
+    } else if (props.numStatus === 'low') {
         numColor = 'black';
         numBg = warning;
         numArrow = ' ↓';
@@ -152,7 +152,7 @@ function GuessRow(props) {
                 }}
                 align="right"
             >
-                {props.age === null ? "None" : props.age + ageArrow}
+                {props.age == null ? "None" : props.age + ageArrow}
             </TableCell>
             {/* Number */}
             <TableCell
@@ -163,7 +163,7 @@ function GuessRow(props) {
                 }}
                 align="right"
             >
-                {props.number === null ? "None" : props.number + numArrow}
+                {props.number == null ? "None" : props.number + numArrow}
             </TableCell>
         </TableRow>
     );

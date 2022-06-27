@@ -2,11 +2,10 @@ import * as React from 'react';
 import { ThemeProvider } from '@mui/system';
 import theme from './assets/theme';
 import ButtonAppBar from './components/ButtonAppBar';
-import { Grid, Typography } from '@mui/material';
+import { CircularProgress, Grid, Typography } from '@mui/material';
 import Footer from './components/Footer';
 import GoaldleLogo from './components/GoaldleLogo';
 import Divider from '@mui/material/Divider';
-import initialImg from './assets/sample.png';
 import GoaldleInput from './components/GoaldleInput';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -15,44 +14,51 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import GuessRow from './components/GuessRow';
+import { collection, query, orderBy, onSnapshot, where, getDoc, doc } from "firebase/firestore";
+import { db } from './utils/firebase';
+import { Player } from './utils/model/player';
+import { getPlayers } from './utils/controller';
 
-function createData(
-  id,
-  name,
-  team,
-  position,
-  country,
-  age,
-  number
-) {
-  return {
-    id,
-    name,
-    team,
-    position,
-    country,
-    age,
-    number
-  };
-}
-
-const rows = [
-  createData(
-    '66',
-    'Trent Alexander-Arnold',
-    'Liverpool',
-    'RB',
-    'England',
-    23,
-    66
-  ),
-];
+// import initialImg from './assets/sample.png';
 
 function App() {
+  const [playerList, setPlayerList] = React.useState([]);
+  const [mystery, setMystery] = React.useState();
+
+  // NOTE: real-time function
+  React.useEffect(() => {
+    const players_queries = query(collection(db, 'Player'), orderBy('name', 'desc'));
+    onSnapshot(players_queries, (querySnapshot) => {
+
+      let list = querySnapshot.docs;
+
+      let player = list[0];
+      // let player = list[new Date().getDate()];
+
+      setMystery(new Player(
+        player.id,
+        player.data().age,
+        player.data().country,
+        player.data().name,
+        player.data().number,
+        player.data().pathBlank,
+        player.data().pathOri,
+        player.data().position,
+        player.data().showCount,
+        player.data().team,
+      ));
+
+      setPlayerList(querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        data: doc.data(),
+      })));
+    });
+  }, [playerList, mystery]);
+
   return (
     <ThemeProvider theme={theme}>
       <ButtonAppBar />
-      <Grid container spacing={2} style={{ height: '100%', padding: '10px' }} >
+      <Grid container spacing={2} style={{ height: '100%', padding: '10px', marginBottom: '10px' }} >
         <Grid
           item
           xs={12}
@@ -65,7 +71,14 @@ function App() {
         >
           <GoaldleLogo />
           <Divider style={{ width: '80%', marginBottom: '30px' }} sx={{ borderBottomWidth: 3, borderColor: 'white' }} />
-          <img src={initialImg} alt={"Mystery Player"} height={'250px'} />
+          {
+            mystery == null
+              ?
+              <CircularProgress />
+              :
+              <img src={require(`${mystery.pathBlank}`)} alt={"Mystery Player"} height={'250px'} />
+          }
+          <p>{JSON.stringify(mystery)}</p>
           <Typography variant="h5">
             Can you guess this
           </Typography>
@@ -85,8 +98,9 @@ function App() {
           <GoaldleInput
             label={"Guess 1 of 8"}
             onChange={(value) => {
-              console.log("Selected Item: " + value);
+              console.log("Selected player: " + value);
             }}
+            playerList={playerList}
           />
           <TableContainer style={{ backgroundColor: '#1a2027' }}>
             <Table>
@@ -95,13 +109,13 @@ function App() {
                   <TableCell style={{ textAlign: 'center', color: 'white', fontWeight: 'bold' }}>Name</TableCell>
                   <TableCell align="right" style={{ textAlign: 'center', color: 'white', fontWeight: 'bold' }}>Team</TableCell>
                   <TableCell align="right" style={{ textAlign: 'center', color: 'white', fontWeight: 'bold' }}>Position</TableCell>
-                  <TableCell align="right" style={{ textAlign: 'center', color: 'white', fontWeight: 'bold' }}>countryality</TableCell>
+                  <TableCell align="right" style={{ textAlign: 'center', color: 'white', fontWeight: 'bold' }}>Country</TableCell>
                   <TableCell align="right" style={{ textAlign: 'center', color: 'white', fontWeight: 'bold' }}>Age</TableCell>
                   <TableCell align="right" style={{ textAlign: 'center', color: 'white', fontWeight: 'bold' }}>Number</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
+                {/* {rows.map((row) => (
                   <GuessRow
                     id={row.id}
                     name={row.name}
@@ -117,7 +131,7 @@ function App() {
                     ageStatus={'high'}
                     numStatus={'low'}
                   />
-                ))}
+                ))} */}
               </TableBody>
             </Table>
           </TableContainer>
