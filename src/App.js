@@ -13,29 +13,27 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import GuessRow from './components/GuessRow';
-import { collection, doc, getDocs, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from './utils/firebase';
 import { Player } from './utils/model/player';
-import { fetchTeam, fetchCountry, fetchPlayer } from './utils/controller';
+import { fetchTeam, fetchCountry } from './utils/controller';
+import GoaldleTableRow from './components/GoaldleTableRow';
 
 // import initialImg from './assets/sample.png';
 // aL9l6YI1K9oU2KicAH9b
 
 function App() {
-  const [playerList, setPlayerList] = React.useState([]);
-  const [playerX, setPlayerX] = React.useState(new Player());
+  const [playerX, setPlayerX] = React.useState(null);
 
   const getPlayerX = async () => {
     // get playerX id on settings
     let playerX = '';
 
-    const docRef1 = doc(db, "Settings", "settings_mystery_player");
-    const docSnap1 = await getDoc(docRef1);
+    const docRefRandom = doc(db, "Settings", "settings_mystery_player");
+    const docSnapRandom = await getDoc(docRefRandom);
 
-    if (docSnap1.exists()) {
-      playerX = docSnap1.data().id;
-      console.log(playerX);
+    if (docSnapRandom.exists()) {
+      playerX = docSnapRandom.data().id;
     } else {
       // doc.data() will be undefined in this case
       console.log("Player not found");
@@ -69,24 +67,38 @@ function App() {
     }
   }
 
-  const getPlayers = async () => {
-    let players = [];
-
-    const querySnapshot = await getDocs(collection(db, "Player"));
-    querySnapshot.forEach(async (doc) => {
-      let player = await fetchPlayer(doc.id);
-      players.push(player);
-    });
-
-    setPlayerList(players);
-    return true;
-  }
-
   React.useEffect(() => {
-    getPlayers();
     getPlayerX();
   }, []);
 
+  const [guess, setGuess] = React.useState([]);
+  const [label, setLabel] = React.useState("Select a player");
+  const [game, setGame] = React.useState(false);
+
+  const addGuess = (player) => {
+    if (guess.length < 8 && !game) {
+      console.log("Selected Player: \n" + player.name);
+      setGuess((prev) => [...prev, player]);
+      if (guess.length === 7) {
+        // LOSE
+        console.log('X');
+        setLabel(`Guess 8 of 8`);
+      } else {
+        setLabel(`Guess ${guess.length + 1} of 8`);
+        if (player.id === playerX.id) {
+          // WIN
+          setGame(true);
+          console.log('YOU WON!!!');
+        }
+      }
+    }
+  }
+
+  const defaultStyle = {
+    textAlign: 'center',
+    color: 'black',
+    backgroundColor: '#edeae5',
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -104,24 +116,19 @@ function App() {
         >
           <GoaldleLogo />
           <Divider style={{ width: '80%', marginBottom: '30px' }} sx={{ borderBottomWidth: 3, borderColor: 'white' }} />
-          {/* {
-            playerX == null
+          {
+            playerX === null
               ?
               <CircularProgress />
               :
-              <img src={require(`${playerX.data.pathBlank}`)} alt={"Mystery Player"} height={'250px'} />
-          } */}
-          {
-            <div>
-              <p>{JSON.stringify(playerList)}</p>
-              <p>{JSON.stringify(playerX)}</p>
-            </div>
+              <img src={require(`${playerX.pathBlank}`)} alt={"Mystery Player"} height={'250px'} style={{ marginBottom: '20px' }} />
+            // <p>{playerX.team.league.id}</p>
           }
           <Typography variant="h5">
             Can you guess this
           </Typography>
           <Typography variant="h3" style={{ fontWeight: 'bolder' }}>
-            MYSTERY PLAYER?
+            PLAYER X?
           </Typography>
           <Divider style={{ width: '80%', marginTop: '30px', marginBottom: '30px' }} sx={{ borderBottomWidth: 3, borderColor: 'white' }} />
         </Grid>
@@ -133,13 +140,10 @@ function App() {
           direction="column"
           justifyContent="center"
         >
-          {/* <GoaldleInput
-            label={"Guess 1 of 8"}
-            onChange={(value) => {
-              console.log("Selected player: " + value);
-            }}
-            playerList={playerList}
-          /> */}
+          <GoaldleInput
+            label={label}
+            onChange={addGuess}
+          />
           <TableContainer style={{ backgroundColor: '#1a2027' }}>
             <Table>
               <TableHead>
@@ -153,23 +157,18 @@ function App() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {/* {rows.map((row) => (
-                  <GuessRow
-                    id={row.id}
-                    name={row.name}
-                    team={row.team}
-                    position={row.position}
-                    country={row.country}
-                    age={row.age}
-                    number={row.number}
-                    nameStatus={null}
-                    teamStatus={'success'}
-                    posStatus={'success'}
-                    countryStatus={'success'}
-                    ageStatus={'high'}
-                    numStatus={'low'}
-                  />
-                ))} */}
+                {
+                  guess.length === 0
+                    ? null
+                    : guess.map((player, index) => (
+                      <GoaldleTableRow
+                        key={index}
+                        index={index}
+                        player={player}
+                        playerX={playerX}
+                      />
+                    ))
+                }
               </TableBody>
             </Table>
           </TableContainer>

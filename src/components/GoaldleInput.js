@@ -4,19 +4,35 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import { collection, getDocs } from "firebase/firestore";
+import { fetchPlayer } from '../utils/controller';
+import { db } from '../utils/firebase';
 
 export default function GoaldleInput(props) {
-    const playerList = props.playerList;
+    const [playerList, setPlayerList] = React.useState([]);
 
-    const [value, setValue] = React.useState('');
+    const getPlayers = async () => {
+        let players = [];
+
+        const querySnapshot = await getDocs(collection(db, "Player"));
+        querySnapshot.forEach(async (doc) => {
+            let player = await fetchPlayer(doc.id);
+            players.push(player);
+        });
+
+        setPlayerList(players);
+    }
+
+    React.useEffect(() => {
+        getPlayers();
+    }, []);
 
     const handleChange = (event) => {
-        setValue(event.target.value);
-
+        // console.log(event.target.value);
         props.onChange(event.target.value);
     };
 
-    return (
+    return playerList.length === 0 ? null : (
         <Box style={{ marginBottom: '20px' }}>
             <FormControl
                 fullWidth
@@ -24,7 +40,7 @@ export default function GoaldleInput(props) {
             >
                 <InputLabel id="demo-simple-select-label">{props.label}</InputLabel>
                 <Select
-                    value={value}
+                    defaultValue={''}
                     label={props.label}
                     onChange={handleChange}
                     style={{
@@ -32,7 +48,7 @@ export default function GoaldleInput(props) {
                     }}
                 >
                     {playerList.map((player) => (
-                        <MenuItem key={player.id} value={player.id}>{player.data.name}</MenuItem>
+                        <MenuItem key={player.id} value={player}>{player.name}</MenuItem>
                     ))}
                 </Select>
             </FormControl>
