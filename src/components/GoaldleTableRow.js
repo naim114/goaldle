@@ -1,4 +1,3 @@
-import { AirlineSeatFlatTwoTone } from '@mui/icons-material';
 import { TableRow, TableCell } from '@mui/material';
 import React from 'react';
 
@@ -69,10 +68,10 @@ function GoaldleTableRow(props) {
             setAgeStyle(warningStyle);
         }
 
-        if (player.age > playerX.age) {
-            setAge(`${player.age}  ↑`);
-        } else if (player.age < playerX.age) {
+        if (playerX.age < player.age) {
             setAge(`${player.age}  ↓`);
+        } else if (playerX.age > player.age) {
+            setAge(`${player.age}  ↑`);
         } else if (player.age === playerX.age) {
             setAgeStyle(successStyle);
             setAge(`${player.age}`);

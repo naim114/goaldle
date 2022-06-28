@@ -3,7 +3,7 @@ import { Container, Typography } from '@mui/material';
 
 function GoaldleLogo() {
     return (
-        <Container style={{ textAlign: 'center', marginBottom: "40px", marginTop: "40px" }}>
+        <Container style={{ textAlign: 'center', marginBottom: "40px" }}>
             <Typography
                 variant="h2"
                 component="div"

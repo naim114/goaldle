@@ -18,12 +18,27 @@ import { db } from './utils/firebase';
 import { Player } from './utils/model/player';
 import { fetchTeam, fetchCountry } from './utils/controller';
 import GoaldleTableRow from './components/GoaldleTableRow';
-
+import HTPModal from './components/HTPModal';
+import ResultModal from './components/ResultModal';
 // import initialImg from './assets/sample.png';
 // aL9l6YI1K9oU2KicAH9b
 
 function App() {
   const [playerX, setPlayerX] = React.useState(null);
+
+  const [openHTP, setOpenHTP] = React.useState(true);
+  const handleOpenHTP = () => setOpenHTP(true);
+  const handleCloseHTP = () => setOpenHTP(false);
+
+  const [openResult, setOpenResult] = React.useState(false);
+  const handleOpenResult = () => setOpenResult(true);
+  const handleCloseResult = () => setOpenResult(false);
+
+  const [result, setResult] = React.useState(false);
+
+  const [guess, setGuess] = React.useState([]);
+  const [label, setLabel] = React.useState("Select a player");
+  const [game, setGame] = React.useState(false);
 
   const getPlayerX = async () => {
     // get playerX id on settings
@@ -51,8 +66,6 @@ function App() {
         await fetchCountry(docSnap.data().country),
         docSnap.data().name,
         docSnap.data().number,
-        docSnap.data().pathBlank,
-        docSnap.data().pathOri,
         docSnap.data().position,
         docSnap.data().showCount,
         await fetchTeam(docSnap.data().team),
@@ -71,39 +84,33 @@ function App() {
     getPlayerX();
   }, []);
 
-  const [guess, setGuess] = React.useState([]);
-  const [label, setLabel] = React.useState("Select a player");
-  const [game, setGame] = React.useState(false);
-
   const addGuess = (player) => {
     if (guess.length < 8 && !game) {
       console.log("Selected Player: \n" + player.name);
       setGuess((prev) => [...prev, player]);
       if (guess.length === 7) {
         // LOSE
-        console.log('X');
         setLabel(`Guess 8 of 8`);
+        setResult(false);
+        handleOpenResult();
       } else {
         setLabel(`Guess ${guess.length + 1} of 8`);
         if (player.id === playerX.id) {
           // WIN
           setGame(true);
-          console.log('YOU WON!!!');
+          setResult(true);
+          handleOpenResult();
         }
       }
     }
   }
 
-  const defaultStyle = {
-    textAlign: 'center',
-    color: 'black',
-    backgroundColor: '#edeae5',
-  };
-
   return (
     <ThemeProvider theme={theme}>
-      <ButtonAppBar />
-      <Grid container spacing={2} style={{ height: '100%', padding: '10px', marginBottom: '40px' }} >
+      <ButtonAppBar
+        onClickHTP={handleOpenHTP}
+      />
+      <Grid container spacing={2} style={{ height: '100%', padding: '10px', marginBottom: '30px', marginTop: '30px' }} >
         <Grid
           item
           xs={12}
@@ -121,8 +128,7 @@ function App() {
               ?
               <CircularProgress />
               :
-              <img src={require(`${playerX.pathBlank}`)} alt={"Mystery Player"} height={'250px'} style={{ marginBottom: '20px' }} />
-            // <p>{playerX.team.league.id}</p>
+              <img src={require(`./assets/players/${playerX.id}/blank.png`)} alt={"Mystery Player"} height={'250px'} style={{ marginBottom: '20px' }} />
           }
           <Typography variant="h5">
             Can you guess this
@@ -138,13 +144,13 @@ function App() {
           md={6}
           container
           direction="column"
-          justifyContent="center"
+          justifyContent="flex-start"
         >
           <GoaldleInput
             label={label}
             onChange={addGuess}
           />
-          <TableContainer style={{ backgroundColor: '#1a2027' }}>
+          <TableContainer style={{ backgroundColor: '#1a2027', marginBottom: '30px' }}>
             <Table>
               <TableHead>
                 <TableRow>
@@ -175,6 +181,24 @@ function App() {
         </Grid>
       </Grid>
       <Footer />
+      {/* How To Play Modal */}
+      <HTPModal
+        open={openHTP}
+        onClose={handleCloseHTP}
+      />
+      {
+        playerX === null
+          ?
+          null
+          :
+          <ResultModal
+            open={openResult}
+            onClose={handleCloseResult}
+            playerX={playerX}
+            result={result}
+            guess={guess.length}
+          />
+      }
     </ThemeProvider>
   );
 }

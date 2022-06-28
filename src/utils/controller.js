@@ -73,8 +73,6 @@ export const fetchPlayer = async (docID) => {
             await fetchCountry(docSnap.data().country),
             docSnap.data().name,
             docSnap.data().number,
-            docSnap.data().pathBlank,
-            docSnap.data().pathOri,
             docSnap.data().position,
             docSnap.data().showCount,
             await fetchTeam(docSnap.data().team),

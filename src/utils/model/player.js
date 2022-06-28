@@ -5,8 +5,6 @@ export class Player {
         country,
         name,
         number,
-        pathBlank,
-        pathOri,
         position,
         showCount,
         team,
@@ -16,8 +14,6 @@ export class Player {
         this.country = country;
         this.name = name;
         this.number = number;
-        this.pathBlank = pathBlank;
-        this.pathOri = pathOri;
         this.position = position;
         this.showCount = showCount;
         this.team = team;
