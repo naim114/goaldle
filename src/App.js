@@ -14,51 +14,84 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import GuessRow from './components/GuessRow';
-import { collection, query, orderBy, onSnapshot, where, getDoc, doc } from "firebase/firestore";
+import { collection, doc, getDocs, getDoc } from "firebase/firestore";
 import { db } from './utils/firebase';
 import { Player } from './utils/model/player';
-import { getPlayers } from './utils/controller';
+import { fetchTeam, fetchCountry, fetchPlayer } from './utils/controller';
 
 // import initialImg from './assets/sample.png';
+// aL9l6YI1K9oU2KicAH9b
 
 function App() {
   const [playerList, setPlayerList] = React.useState([]);
-  const [mystery, setMystery] = React.useState();
+  const [playerX, setPlayerX] = React.useState(new Player());
 
-  // NOTE: real-time function
-  React.useEffect(() => {
-    const players_queries = query(collection(db, 'Player'), orderBy('name', 'desc'));
-    onSnapshot(players_queries, (querySnapshot) => {
+  const getPlayerX = async () => {
+    // get playerX id on settings
+    let playerX = '';
 
-      let list = querySnapshot.docs;
+    const docRef1 = doc(db, "Settings", "settings_mystery_player");
+    const docSnap1 = await getDoc(docRef1);
 
-      let player = list[0];
-      // let player = list[new Date().getDate()];
+    if (docSnap1.exists()) {
+      playerX = docSnap1.data().id;
+      console.log(playerX);
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("Player not found");
+      return false;
+    }
 
-      setMystery(new Player(
-        player.id,
-        player.data().age,
-        player.data().country,
-        player.data().name,
-        player.data().number,
-        player.data().pathBlank,
-        player.data().pathOri,
-        player.data().position,
-        player.data().showCount,
-        player.data().team,
-      ));
+    // init playerX model
+    const docRef = doc(db, "Player", playerX);
+    const docSnap = await getDoc(docRef);
 
-      setPlayerList(querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        data: doc.data(),
-      })));
+    if (docSnap.exists()) {
+      let data = new Player(
+        docSnap.id,
+        docSnap.data().age,
+        await fetchCountry(docSnap.data().country),
+        docSnap.data().name,
+        docSnap.data().number,
+        docSnap.data().pathBlank,
+        docSnap.data().pathOri,
+        docSnap.data().position,
+        docSnap.data().showCount,
+        await fetchTeam(docSnap.data().team),
+      );
+      // console.log(data);
+      setPlayerX(data);
+      return data;
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("Player not found");
+      return false;
+    }
+  }
+
+  const getPlayers = async () => {
+    let players = [];
+
+    const querySnapshot = await getDocs(collection(db, "Player"));
+    querySnapshot.forEach(async (doc) => {
+      let player = await fetchPlayer(doc.id);
+      players.push(player);
     });
-  }, [playerList, mystery]);
+
+    setPlayerList(players);
+    return true;
+  }
+
+  React.useEffect(() => {
+    getPlayers();
+    getPlayerX();
+  }, []);
+
 
   return (
     <ThemeProvider theme={theme}>
       <ButtonAppBar />
-      <Grid container spacing={2} style={{ height: '100%', padding: '10px', marginBottom: '10px' }} >
+      <Grid container spacing={2} style={{ height: '100%', padding: '10px', marginBottom: '40px' }} >
         <Grid
           item
           xs={12}
@@ -71,14 +104,19 @@ function App() {
         >
           <GoaldleLogo />
           <Divider style={{ width: '80%', marginBottom: '30px' }} sx={{ borderBottomWidth: 3, borderColor: 'white' }} />
-          {
-            mystery == null
+          {/* {
+            playerX == null
               ?
               <CircularProgress />
               :
-              <img src={require(`${mystery.pathBlank}`)} alt={"Mystery Player"} height={'250px'} />
+              <img src={require(`${playerX.data.pathBlank}`)} alt={"Mystery Player"} height={'250px'} />
+          } */}
+          {
+            <div>
+              <p>{JSON.stringify(playerList)}</p>
+              <p>{JSON.stringify(playerX)}</p>
+            </div>
           }
-          <p>{JSON.stringify(mystery)}</p>
           <Typography variant="h5">
             Can you guess this
           </Typography>
@@ -95,13 +133,13 @@ function App() {
           direction="column"
           justifyContent="center"
         >
-          <GoaldleInput
+          {/* <GoaldleInput
             label={"Guess 1 of 8"}
             onChange={(value) => {
               console.log("Selected player: " + value);
             }}
             playerList={playerList}
-          />
+          /> */}
           <TableContainer style={{ backgroundColor: '#1a2027' }}>
             <Table>
               <TableHead>
