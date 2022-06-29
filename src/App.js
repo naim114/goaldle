@@ -6,7 +6,6 @@ import { CircularProgress, Grid, Typography } from '@mui/material';
 import Footer from './components/Footer';
 import GoaldleLogo from './components/GoaldleLogo';
 import Divider from '@mui/material/Divider';
-import GoaldleInput from './components/GoaldleInput';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -20,8 +19,7 @@ import { fetchTeam, fetchCountry } from './utils/controller';
 import GoaldleTableRow from './components/GoaldleTableRow';
 import HTPModal from './components/HTPModal';
 import ResultModal from './components/ResultModal';
-// import initialImg from './assets/sample.png';
-// aL9l6YI1K9oU2KicAH9b
+import GoaldleAutocomplete from './components/GoaldleAutocomplete';
 
 function App() {
   const [playerX, setPlayerX] = React.useState(null);
@@ -96,6 +94,7 @@ function App() {
       } else {
         setLabel(`Guess ${guess.length + 1} of 8`);
         if (player.id === playerX.id) {
+          console.log("🟩🟩🟩🟩🟩🟩");
           // WIN
           setGame(true);
           setResult(true);
@@ -104,6 +103,10 @@ function App() {
       }
     }
   }
+
+  // TODO put donation banner
+  // TODO copyable share result
+  // TODO PROABLY use node.js to generate new player everyday
 
   return (
     <ThemeProvider theme={theme}>
@@ -146,7 +149,7 @@ function App() {
           direction="column"
           justifyContent="flex-start"
         >
-          <GoaldleInput
+          <GoaldleAutocomplete
             label={label}
             onChange={addGuess}
           />
@@ -186,19 +189,15 @@ function App() {
         open={openHTP}
         onClose={handleCloseHTP}
       />
-      {
-        playerX === null
-          ?
-          null
-          :
-          <ResultModal
-            open={openResult}
-            onClose={handleCloseResult}
-            playerX={playerX}
-            result={result}
-            guess={guess.length}
-          />
-      }
+      {playerX === null
+        ? null
+        : <ResultModal
+          open={openResult}
+          onClose={handleCloseResult}
+          playerX={playerX}
+          result={result}
+          guess={guess.length}
+        />}
     </ThemeProvider>
   );
 }

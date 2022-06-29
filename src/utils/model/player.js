@@ -17,5 +17,6 @@ export class Player {
         this.position = position;
         this.showCount = showCount;
         this.team = team;
+        this.label = name;
     }
 }
