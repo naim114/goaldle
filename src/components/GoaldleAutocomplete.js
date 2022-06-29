@@ -31,13 +31,6 @@ export default function GoaldleAutocomplete(props) {
         }
     };
 
-    const styles = theme => ({
-        multilineColor: {
-            color: 'red'
-        }
-    });
-
-
     return playerList.length === 0 ? null : (
         <Autocomplete
             style={{ width: '100%', marginBottom: '20px' }}

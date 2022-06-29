@@ -162,7 +162,6 @@ function App() {
   }
 
   // TODO put donation banner
-  // TODO copyable share result
   // TODO PROABLY use node.js to generate new player everyday
 
   return (
@@ -238,6 +237,13 @@ function App() {
               </TableBody>
             </Table>
           </TableContainer>
+
+          <Typography style={{ textAlign: 'center', color: 'white', fontSize: '10px' }}>
+            Consider donating to support this game server at <a href="https://www.buymeacoffee.com/na1m" style={{ textDecorationColor: 'white', color: 'white' }}>https://www.buymeacoffee.com/na1m</a>
+          </Typography>
+          <Typography href="https://github.com/naim114" style={{ textAlign: 'center', color: 'white', fontSize: '10px' }}>
+            Created by <a href="https://github.com/naim114" style={{ textDecorationColor: 'white', color: 'white' }}>naim114</a>
+          </Typography>
         </Grid>
       </Grid>
       <Footer />
@@ -246,17 +252,19 @@ function App() {
         open={openHTP}
         onClose={handleCloseHTP}
       />
-      {playerX === null
-        ? null
-        : <ResultModal
-          open={openResult}
-          onClose={handleCloseResult}
-          playerX={playerX}
-          result={result}
-          guess={guess.length}
-          score={score}
-        />}
-    </ThemeProvider>
+      {
+        playerX === null
+          ? null
+          : <ResultModal
+            open={openResult}
+            onClose={handleCloseResult}
+            playerX={playerX}
+            result={result}
+            guess={guess.length}
+            score={score}
+          />
+      }
+    </ThemeProvider >
   );
 }
 
