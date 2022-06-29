@@ -161,9 +161,6 @@ function App() {
     }
   }
 
-  // TODO put donation banner
-  // TODO PROABLY use node.js to generate new player everyday
-
   return (
     <ThemeProvider theme={theme}>
       <ButtonAppBar
