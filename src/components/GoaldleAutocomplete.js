@@ -1,9 +1,13 @@
 import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import { collection, getDocs } from "firebase/firestore";
+import Grid from '@mui/material/Grid';
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { fetchPlayer } from '../utils/controller';
 import { db } from '../utils/firebase';
+import { CircularProgress } from '@mui/material';
+import { fetchTeam, fetchCountry } from '../utils/controller';
+import { Player } from '../utils/model/player';
 
 export default function GoaldleAutocomplete(props) {
     const [playerList, setPlayerList] = React.useState([]);
@@ -20,7 +24,50 @@ export default function GoaldleAutocomplete(props) {
         setPlayerList(players);
     }
 
+    const [playerX, setPlayerX] = React.useState(null);
+
+    const getPlayerX = async () => {
+        // get playerX id on settings
+        let playerX = '';
+
+        const docRefRandom = doc(db, "Settings", "settings_mystery_player");
+        const docSnapRandom = await getDoc(docRefRandom);
+
+        if (docSnapRandom.exists()) {
+            playerX = docSnapRandom.data().id;
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("Player not found");
+            return false;
+        }
+
+        // init playerX model
+        const docRef = doc(db, "Player", playerX);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            let data = new Player(
+                docSnap.id,
+                docSnap.data().age,
+                await fetchCountry(docSnap.data().country),
+                docSnap.data().name,
+                docSnap.data().number,
+                docSnap.data().position,
+                docSnap.data().showCount,
+                await fetchTeam(docSnap.data().team),
+            );
+            // console.log(data);
+            setPlayerX(data);
+            return data;
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("Player not found");
+            return false;
+        }
+    }
+
     React.useEffect(() => {
+        getPlayerX();
         getPlayers();
     }, []);
 
@@ -31,20 +78,31 @@ export default function GoaldleAutocomplete(props) {
         }
     };
 
-    return playerList.length === 0 ? null : (
-        <Autocomplete
-            style={{ width: '100%', marginBottom: '20px' }}
-            disablePortal
-            options={playerList}
-            sx={{ color: 'white' }}
-            onChange={handleChange}
-            renderInput={(params) => (
-                <TextField
-                    {...params}
-                    label={props.label}
-                    sx={{ input: { color: 'white' } }}
-                />
-            )}
-        />
-    );
+    return playerList.length === 0
+        ?
+        <Grid
+            container
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            style={{ marginBottom: '10px' }}
+        >
+            <CircularProgress />
+        </Grid>
+        : (
+            <Autocomplete
+                style={{ width: '100%', marginBottom: '20px' }}
+                disablePortal
+                options={playerList}
+                sx={{ color: props.inputColor === null ? 'white' : props.inputColor }}
+                onChange={handleChange}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label={props.label}
+                        sx={{ input: { color: props.inputColor === null ? 'white' : props.inputColor } }}
+                    />
+                )}
+            />
+        );
 }
