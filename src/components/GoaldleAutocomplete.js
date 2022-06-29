@@ -31,15 +31,26 @@ export default function GoaldleAutocomplete(props) {
         }
     };
 
+    const styles = theme => ({
+        multilineColor: {
+            color: 'red'
+        }
+    });
+
+
     return playerList.length === 0 ? null : (
         <Autocomplete
             style={{ width: '100%', marginBottom: '20px' }}
             disablePortal
             options={playerList}
-            sx={{ width: 300 }}
+            sx={{ color: 'white' }}
             onChange={handleChange}
             renderInput={(params) => (
-                <TextField {...params} label={props.label} />
+                <TextField
+                    {...params}
+                    label={props.label}
+                    sx={{ input: { color: 'white' } }}
+                />
             )}
         />
     );

@@ -35,7 +35,13 @@ function ResultModal(props) {
                 <Typography variant="h6" component="h6">
                     {result ? `You solved it in ${guess} guess` : "Better luck tomorrow!"}
                 </Typography>
-                <Button style={{ marginTop: '10px' }} variant="contained">SHARE MY SCORE</Button>
+                <Button
+                    style={{ marginTop: '10px' }}
+                    variant="contained"
+                    onClick={() => { navigator.clipboard.writeText(`Goaldle ${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()} - ${guess}/8 Guess\n${props.score}\n\nTry Now at https://goaldle.netlify.app/`) }}
+                >
+                    SHARE MY SCORE
+                </Button>
                 <Divider style={{ width: '100%', marginTop: '30px', marginBottom: '30px' }} sx={{ borderBottomWidth: 3, borderColor: 'black' }} />
             </Box>
         </Modal>

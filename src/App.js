@@ -37,6 +37,7 @@ function App() {
   const [guess, setGuess] = React.useState([]);
   const [label, setLabel] = React.useState("Select a player");
   const [game, setGame] = React.useState(false);
+  const [score, setScore] = React.useState('');
 
   const getPlayerX = async () => {
     // get playerX id on settings
@@ -87,18 +88,74 @@ function App() {
       console.log("Selected Player: \n" + player.name);
       setGuess((prev) => [...prev, player]);
       if (guess.length === 7) {
-        // LOSE
+        // LOSE 🟥
+        let row = '🟥🟥🟥🟥🟥🟥';
+        console.log(row);
+        setScore(`${score}\n${row}`);
+        console.log("Final Score: \n" + score);
         setLabel(`Guess 8 of 8`);
         setResult(false);
         handleOpenResult();
       } else {
-        setLabel(`Guess ${guess.length + 1} of 8`);
         if (player.id === playerX.id) {
-          console.log("🟩🟩🟩🟩🟩🟩");
-          // WIN
+          // WIN 🟩
+          let row = '🟩🟩🟩🟩🟩🟩';
+          console.log(row);
+          setScore(`${score}\n${row}`);
+          console.log("Final Score: \n" + score);
           setGame(true);
           setResult(true);
           handleOpenResult();
+        } else {
+          // STILL GUESSING 🟨⬜
+          setLabel(`Guess ${guess.length + 1} of 8`);
+          let row = '⬜';
+
+          // team check if it in the same league
+          if (player.team.id === playerX.team.id) {
+            row = row + '🟩';
+          } else if (player.team.league.id === playerX.team.league.id) {
+            row = row + '🟨';
+          } else {
+            row = row + '⬜';
+          }
+
+          // position check
+          if (player.position === playerX.position) {
+            row = row + '🟩';
+          } else {
+            row = row + '⬜';
+          }
+
+          // country check if it in the same continent
+          if (player.country.id === playerX.country.id) {
+            row = row + '🟩';
+          } else if (player.country.continent === playerX.country.continent) {
+            row = row + '🟨';
+          } else {
+            row = row + '⬜';
+          }
+
+          // age check
+          if (player.age === playerX.age) {
+            row = row + '🟩';
+          } else if (((playerX.age - player.age) <= 2 && (playerX.age - player.age) > 0) || ((player.age - playerX.age) <= 2 && (player.age - playerX.age) > 0)) {
+            row = row + '🟨';
+          } else {
+            row = row + '⬜';
+          }
+
+          // number check
+          if (player.number === playerX.number) {
+            row = row + '🟩';
+          } else if (((playerX.number - player.number) <= 2 && (playerX.number - player.number) > 0) || ((player.number - playerX.number) <= 2 && (player.number - playerX.number) > 0)) {
+            row = row + '🟨';
+          } else {
+            row = row + '⬜';
+          }
+
+          console.log(row);
+          setScore(`${score}\n${row}`);
         }
       }
     }
@@ -197,6 +254,7 @@ function App() {
           playerX={playerX}
           result={result}
           guess={guess.length}
+          score={score}
         />}
     </ThemeProvider>
   );
