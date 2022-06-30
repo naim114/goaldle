@@ -1,4 +1,4 @@
-import { doc, collection, getDocs, query, orderBy, getDoc } from 'firebase/firestore'
+import { doc, collection, getDocs, getDoc } from 'firebase/firestore'
 import { db } from './firebase';
 import { Country } from './model/country';
 import { League } from './model/league';

@@ -37,7 +37,7 @@ function Backdoor(props) {
             {
                 enter
                     ?
-                    <Grid container spacing={2} style={{ height: '100%', padding: '30px' }}>
+                    <Grid container spacing={2} style={{ height: '100%', padding: '30px', marginBottom: '30px' }}>
                         <Grid item xs={12} md={2}>
                             <Button
                                 variant="contained"
@@ -104,7 +104,9 @@ function Backdoor(props) {
                                     )
                                 } else if (drawer === 'country') {
                                     return (
-                                        <ManageCountry />
+                                        <ManageCountry
+                                            onRefresh={() => setDrawer('dashboard')}
+                                        />
                                     )
                                 }
                             })()}

@@ -196,6 +196,7 @@ function Homepage() {
                     <GoaldleAutocomplete
                         label={label}
                         onChange={addGuess}
+                        inputColor={'white'}
                     />
                     <TableContainer style={{ backgroundColor: '#1a2027', marginBottom: '30px' }}>
                         <Table>

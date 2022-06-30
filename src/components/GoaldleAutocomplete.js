@@ -2,7 +2,7 @@ import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid from '@mui/material/Grid';
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, orderBy, query } from "firebase/firestore";
 import { fetchPlayer } from '../utils/controller';
 import { db } from '../utils/firebase';
 import { CircularProgress } from '@mui/material';
@@ -15,7 +15,9 @@ export default function GoaldleAutocomplete(props) {
     const getPlayers = async () => {
         let players = [];
 
-        const querySnapshot = await getDocs(collection(db, "Player"));
+        const querySnapshot = await getDocs(query(collection(db, "Player"), orderBy("name", "asc")));
+        // const querySnapshot = await getDocs(collection(db, "Player"));
+
         querySnapshot.forEach(async (doc) => {
             let player = await fetchPlayer(doc.id);
             players.push(player);
@@ -99,7 +101,7 @@ export default function GoaldleAutocomplete(props) {
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        label={props.label}
+                        label={props.label ?? "Select a player"}
                         sx={{ input: { color: props.inputColor === null ? 'white' : props.inputColor } }}
                     />
                 )}
