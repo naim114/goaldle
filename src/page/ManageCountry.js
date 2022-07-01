@@ -1,6 +1,6 @@
 import { Card, CardContent, Typography, Select, MenuItem, Button, LinearProgress, Box, Modal, TextField } from '@mui/material';
 import React from 'react';
-import { collection, orderBy, getDocs, query, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
+import { collection, orderBy, getDocs, query, doc, getDoc, setDoc, deleteDoc, addDoc } from "firebase/firestore";
 import { db } from '../utils/firebase';
 import { Player } from '../utils/model/player';
 import { fetchTeam, fetchCountry } from '../utils/controller';
@@ -8,6 +8,7 @@ import DataTable from 'react-data-table-component';
 import ActionIconButton from '../components/EditIconButton';
 
 function ManageCountry(props) {
+    const [loading, setLoading] = React.useState(false);
     const [countryList, setCountryList] = React.useState([]);
     const getCountry = async () => {
         let countries = [];
@@ -152,6 +153,7 @@ function ManageCountry(props) {
             return false;
         }
 
+        setLoading(true);
         if (e.target.id === 'add') {
             // if there is empty field
             if (
@@ -161,21 +163,19 @@ function ManageCountry(props) {
                 return false;
             }
 
-            // generate doc id
-            let name = newCountry.name.replace(/[^a-zA-Z ]/g, "");
-            name = name.replace(/ /g, '_');
-            const docID = newCountry.continent.toLowerCase() + "_" + name.toLowerCase();
-
             // update to db
-            console.log("Adding " + docID);
+            console.log("Adding " + newCountry.name);
             try {
-                await setDoc(doc(db, "Country", docID), {
+                const docRef = await addDoc(collection(db, "Country"), {
                     name: newCountry.name,
                     continent: newCountry.continent,
                 });
+
+                console.log("Document written with ID: ", docRef.id);
+
                 handleRefresh();
                 handleCloseAdd();
-                console.log("Added " + docID + " to Firestore");
+                console.log("Added " + newCountry.name + " to Firestore");
             } catch (error) {
                 console.log(error);
             }
@@ -212,6 +212,7 @@ function ManageCountry(props) {
                 console.log(error);
             }
         }
+        setLoading(false);
     }
 
     // Datatable 
@@ -237,7 +238,7 @@ function ManageCountry(props) {
         },
     ];
 
-    return countryList.length === 0
+    return countryList.length === 0 || loading === true
         ?
         <LinearProgress />
         : (
@@ -267,7 +268,7 @@ function ManageCountry(props) {
                             Add Country
                         </Typography>
                         <Typography sx={{ mt: 2, marginBottom: '20px' }}>
-                            Filled in all field and press Confirm to add data.
+                            Filled in all field and press CONFIRM to add data.
                         </Typography>
                         <TextField value={newCountry.name} onChange={(e) => setNewCountry({ ...newCountry, name: e.target.value })} name='name' label="Enter Name" variant="outlined" style={{ width: '100%', marginBottom: '10px' }} />
                         <Select
@@ -302,7 +303,7 @@ function ManageCountry(props) {
                             Edit Country
                         </Typography>
                         <Typography sx={{ mt: 2, marginBottom: '20px' }}>
-                            Filled in all field and press Confirm to edit data.
+                            Filled in all field and press CONFIRM to edit data.
                         </Typography>
                         <TextField value={select.name} onChange={(e) => setSelect({ ...select, name: e.target.value })} name='name' label="Enter Name" variant="outlined" style={{ width: '100%', marginBottom: '10px' }} />
                         <Select
