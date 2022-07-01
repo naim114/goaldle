@@ -27,7 +27,7 @@ function HTPModal(props) {
                     <li style={{ marginBottom: '5px' }}><span style={{ padding: '3px', backgroundColor: '#37be75', color: 'white' }}>Green in any column indicates a match!</span></li>
                     <li style={{ marginBottom: '5px' }}><span style={{ padding: '3px', backgroundColor: '#f4e878' }}>Yellow in the <b>Team</b> column indicates selected player's team is in the same league as Player X's team</span></li>
                     <li style={{ marginBottom: '5px' }}><span style={{ padding: '3px', backgroundColor: '#f4e878' }}>Yellow in the <b>Country</b> column indicates selected player's country is in the same continent as Player X's country</span></li>
-                    <li style={{ marginBottom: '5px' }}><span style={{ padding: '3px', backgroundColor: '#f4e878' }}>Yellow in any other column indicates this attribute is within 2 (years, numbers) of the mystery player</span></li>
+                    <li style={{ marginBottom: '5px' }}><span style={{ padding: '3px', backgroundColor: '#f4e878' }}>Yellow in any other column indicates this attribute is within 2 (years, numbers) of Player X</span></li>
                     <li>A new Player X everyday! </li>
                 </ul>
             </Box>

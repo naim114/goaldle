@@ -175,7 +175,7 @@ function Homepage() {
                             ?
                             <CircularProgress />
                             :
-                            <img src={require(`../assets/players/${playerX.id}/blank.png`)} alt={"Mystery Player"} height={'250px'} style={{ marginBottom: '20px' }} />
+                            <img src={require(`../assets/players/${playerX.id}/blank.png`)} alt={"Player X"} height={'250px'} style={{ marginBottom: '20px' }} />
                     }
                     <Typography variant="h5">
                         Can you guess this

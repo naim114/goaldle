@@ -1,6 +1,6 @@
 import { Card, CardContent, Typography, Select, MenuItem, Button, LinearProgress, Box, Modal, TextField, FormControl, InputLabel, CircularProgress } from '@mui/material';
 import React from 'react';
-import { collection, orderBy, getDocs, query, doc, getDoc, setDoc, deleteDoc, updateDoc, deleteField, addDoc } from "firebase/firestore";
+import { collection, orderBy, getDocs, query, doc, getDoc, setDoc, deleteDoc, addDoc } from "firebase/firestore";
 import { db } from '../utils/firebase';
 import { Player } from '../utils/model/player';
 import { fetchTeam, fetchCountry, fetchLeague } from '../utils/controller';
@@ -116,6 +116,51 @@ function ManageTeam(props) {
         });
     };
 
+    // Select Country to Edit/Delete
+    const [openEdit, setOpenEdit] = React.useState(false);
+    const [openDelete, setOpenDelete] = React.useState(false);
+    const [deleteCheck, setDeleteCheck] = React.useState(true);
+    const [select, setSelect] = React.useState({
+        name: '',
+        league: 'jPRHJoJSiqE6zYThYm1R',
+    });
+    const selectData = (value, action) => {
+        setSelect(value);
+        if (action === 'edit') {
+            console.log("Editing " + value.name);
+            setOpenEdit(true);
+        } else if (action === 'delete') {
+            console.log("Deleting " + value.name);
+            setOpenDelete(true);
+        }
+    }
+
+    // Edit
+    const handleCloseEdit = () => {
+        setOpenEdit(false);
+        setSelect({
+            name: '',
+            league: 'jPRHJoJSiqE6zYThYm1R',
+        });
+    };
+
+    // Delete
+    const handleCloseDelete = () => {
+        setOpenDelete(false);
+        setSelect({
+            name: '',
+            country: 'hoNSbItgD2pZLeP9GErp',
+        });
+        setDeleteCheck(true);
+    };
+    const chekingDelete = (value) => {
+        if (select.name === value) {
+            setDeleteCheck(false);
+        } else {
+            setDeleteCheck(true);
+        }
+    }
+
     // Datatable 
     const columns = [
         {
@@ -136,13 +181,13 @@ function ManageTeam(props) {
             sortable: true,
             wrap: true,
         },
-        // {
-        //     name: 'Action',
-        //     cell: (row) => <div><ActionIconButton action={"edit"} value={row} onClick={selectData} /><ActionIconButton action={"delete"} value={row} onClick={selectData} /></div>,
-        //     button: true,
-        //     ignoreRowClick: true,
-        //     allowOverflow: true,
-        // },
+        {
+            name: 'Action',
+            cell: (row) => <div><ActionIconButton action={"edit"} value={row} onClick={selectData} /><ActionIconButton action={"delete"} value={row} onClick={selectData} /></div>,
+            button: true,
+            ignoreRowClick: true,
+            allowOverflow: true,
+        },
     ];
 
     // Write Data
@@ -177,40 +222,41 @@ function ManageTeam(props) {
                 console.log(error);
             }
         }
-        // else if (e.target.id === 'edit') {
-        //     // if there is empty field
-        //     if (
-        //         select.name === '' ||
-        //         select.country === ''
-        //     ) {
-        //         return false;
-        //     }
+        else if (e.target.id === 'edit') {
+            console.log('edit');
+            // if there is empty field
+            if (
+                select.name === '' ||
+                select.league === ''
+            ) {
+                return false;
+            }
 
-        //     // update to db
-        //     console.log("Editing " + select.id);
-        //     try {
-        //         await setDoc(doc(db, "League", select.id), {
-        //             name: select.name,
-        //             country: select.country.id,
-        //         });
-        //         handleRefresh();
-        //         handleCloseEdit();
-        //         console.log("Edited " + select.id + " in Firestore");
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        // } 
-        // else if (e.target.id === 'delete') {
-        //     console.log("Deleting " + select.id);
-        //     try {
-        //         await deleteDoc(doc(db, "League", select.id));
-        //         handleRefresh();
-        //         handleCloseDelete();
-        //         console.log("Deleted " + select.id + " in Firestore");
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        // }
+            // update to db
+            console.log("Editing " + select.id);
+            try {
+                await setDoc(doc(db, "Team", select.id), {
+                    name: select.name,
+                    league: select.league.id,
+                });
+                handleRefresh();
+                handleCloseEdit();
+                console.log("Edited " + select.id + " in Firestore");
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        else if (e.target.id === 'delete') {
+            console.log("Deleting " + select.id);
+            try {
+                await deleteDoc(doc(db, "Team", select.id));
+                handleRefresh();
+                handleCloseDelete();
+                console.log("Deleted " + select.id + " in Firestore");
+            } catch (error) {
+                console.log(error);
+            }
+        }
         setLoading(false);
     }
     return teamList.length === 0 || loading === true
@@ -268,6 +314,71 @@ function ManageTeam(props) {
                             color="secondary"
                             variant="contained"
                             id={'add'}
+                            onClick={writeData}
+                        >
+                            Confirm
+                        </Button>
+                    </Box>
+                </Modal>
+                {/* Edit Modal */}
+                <Modal
+                    open={openEdit}
+                    onClose={handleCloseEdit}
+                >
+                    <Box sx={style}>
+                        <Typography variant="h6" component="h2">
+                            Edit Team
+                        </Typography>
+                        <Typography sx={{ mt: 2, marginBottom: '20px' }}>
+                            Filled in all field and press CONFIRM to edit data.
+                        </Typography>
+                        <TextField value={select.name} onChange={(e) => setSelect({ ...select, name: e.target.value })} name='name' label="Enter Name" variant="outlined" style={{ width: '100%', marginBottom: '10px' }} />
+                        {leagueList.length === 0
+                            ?
+                            <CircularProgress />
+                            :
+                            <FormControl fullWidth>
+                                <InputLabel>Select League</InputLabel>
+                                <Select
+                                    value={select.league.id}
+                                    label="Select Country"
+                                    onChange={(e) => setSelect({ ...select, league: e.target.value })}
+                                    style={{ width: '100%', marginBottom: '30px' }}
+                                >
+                                    {
+                                        leagueList.map((league) => <MenuItem key={league.id} value={league.id}>{league.name}</MenuItem>)
+                                    }
+                                </Select>
+                            </FormControl>
+                        }
+                        <Button
+                            color="secondary"
+                            variant="contained"
+                            id={'edit'}
+                            onClick={writeData}
+                        >
+                            Confirm
+                        </Button>
+                    </Box>
+                </Modal>
+                {/* Delete Modal */}
+                <Modal
+                    open={openDelete}
+                    onClose={handleCloseDelete}
+                >
+                    <Box sx={style}>
+                        <Typography variant="h6" component="h2">
+                            Delete Team
+                        </Typography>
+                        <Typography sx={{ mt: 2, marginBottom: '20px' }}>
+                            After delete the data can't be retrieve back. To Delete enter <b>{select.name}</b> in the field then click CONFIRM.
+                        </Typography>
+                        <TextField onChange={(e) => chekingDelete(e.target.value)} name='name' variant="outlined" style={{ width: '100%', marginBottom: '10px' }} />
+                        <Button
+                            color="error"
+                            variant="contained"
+                            id={'delete'}
+                            disabled={deleteCheck}
                             onClick={writeData}
                         >
                             Confirm
