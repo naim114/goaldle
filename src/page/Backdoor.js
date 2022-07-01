@@ -4,6 +4,7 @@ import Dashboard from './Dashboard';
 import ManageSettings from './ManageSettings';
 import ManageCountry from './ManageCountry';
 import ManageLeague from './ManageLeague';
+import ManageTeam from './ManageTeam';
 
 function Backdoor(props) {
     const [val, setVal] = React.useState('');
@@ -70,17 +71,17 @@ function Backdoor(props) {
                             </Button>
                             <Button
                                 variant="contained"
-                                style={drawer === 'player' ? active : notActive}
-                                onClick={() => setDrawer('player')}
-                            >
-                                Player
-                            </Button>
-                            <Button
-                                variant="contained"
                                 style={drawer === 'team' ? active : notActive}
                                 onClick={() => setDrawer('team')}
                             >
                                 Team
+                            </Button>
+                            <Button
+                                variant="contained"
+                                style={drawer === 'player' ? active : notActive}
+                                onClick={() => setDrawer('player')}
+                            >
+                                Player
                             </Button>
                             <Button
                                 variant="contained"
@@ -112,6 +113,12 @@ function Backdoor(props) {
                                 } else if (drawer === 'league') {
                                     return (
                                         <ManageLeague
+                                            onRefresh={() => setDrawer('dashboard')}
+                                        />
+                                    )
+                                } else if (drawer === 'team') {
+                                    return (
+                                        <ManageTeam
                                             onRefresh={() => setDrawer('dashboard')}
                                         />
                                     )
