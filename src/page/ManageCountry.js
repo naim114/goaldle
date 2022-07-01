@@ -1,6 +1,6 @@
-import { Card, CardContent, Typography, Select, MenuItem, Button, LinearProgress, Box, Modal, IconButton, TextField } from '@mui/material';
+import { Card, CardContent, Typography, Select, MenuItem, Button, LinearProgress, Box, Modal, TextField } from '@mui/material';
 import React from 'react';
-import { collection, orderBy, getDocs, query, doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, orderBy, getDocs, query, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from '../utils/firebase';
 import { Player } from '../utils/model/player';
 import { fetchTeam, fetchCountry } from '../utils/controller';
@@ -100,6 +100,8 @@ function ManageCountry(props) {
 
     // Select Country to Edit/Delete
     const [openEdit, setOpenEdit] = React.useState(false);
+    const [openDelete, setOpenDelete] = React.useState(false);
+    const [deleteCheck, setDeleteCheck] = React.useState(true);
     const [select, setSelect] = React.useState({
         id: '',
         name: '',
@@ -112,6 +114,7 @@ function ManageCountry(props) {
             setOpenEdit(true);
         } else if (action === 'delete') {
             console.log("Deleting " + value.name);
+            setOpenDelete(true);
         }
     }
 
@@ -124,6 +127,24 @@ function ManageCountry(props) {
             continent: 'Africa',
         });
     };
+
+    // Delete
+    const handleCloseDelete = () => {
+        setOpenDelete(false);
+        setSelect({
+            id: '',
+            name: '',
+            continent: 'Africa',
+        });
+        setDeleteCheck(true);
+    };
+    const chekingDelete = (value) => {
+        if (select.name === value) {
+            setDeleteCheck(false);
+        } else {
+            setDeleteCheck(true);
+        }
+    }
 
     // Write Data
     const writeCountry = async (e) => {
@@ -159,7 +180,6 @@ function ManageCountry(props) {
                 console.log(error);
             }
         } else if (e.target.id === 'edit') {
-            console.log("Ha facts");
             // if there is empty field
             if (
                 select.name === '' ||
@@ -181,6 +201,16 @@ function ManageCountry(props) {
             } catch (error) {
                 console.log(error);
             }
+        } else if (e.target.id === 'delete') {
+            console.log("Deleting " + select.id);
+            try {
+                await deleteDoc(doc(db, "Country", select.id));
+                handleRefresh();
+                handleCloseDelete();
+                console.log("Deleted " + select.id + " in Firestore");
+            } catch (error) {
+                console.log(error);
+            }
         }
     }
 
@@ -188,11 +218,15 @@ function ManageCountry(props) {
     const columns = [
         {
             name: 'Country',
-            selector: row => row.name,
+            selector: row => row.name ?? 'None',
+            sortable: true,
+            wrap: true,
         },
         {
             name: 'Continent',
-            selector: row => row.continent,
+            selector: row => row.continent ?? 'None',
+            sortable: true,
+            wrap: true,
         },
         {
             name: 'Action',
@@ -219,7 +253,6 @@ function ManageCountry(props) {
                         <DataTable
                             data={countryList}
                             columns={columns}
-                            dense
                             pagination
                         />
                     </CardContent>
@@ -288,6 +321,30 @@ function ManageCountry(props) {
                             color="secondary"
                             variant="contained"
                             id={'edit'}
+                            onClick={writeCountry}
+                        >
+                            Confirm
+                        </Button>
+                    </Box>
+                </Modal>
+                {/* Delete Modal */}
+                <Modal
+                    open={openDelete}
+                    onClose={handleCloseDelete}
+                >
+                    <Box sx={style}>
+                        <Typography variant="h6" component="h2">
+                            Delete Country
+                        </Typography>
+                        <Typography sx={{ mt: 2, marginBottom: '20px' }}>
+                            After delete the data can't be retrieve back. To Delete enter <b>{select.name}</b> in the field then click CONFIRM.
+                        </Typography>
+                        <TextField onChange={(e) => chekingDelete(e.target.value)} name='name' variant="outlined" style={{ width: '100%', marginBottom: '10px' }} />
+                        <Button
+                            color="error"
+                            variant="contained"
+                            id={'delete'}
+                            disabled={deleteCheck}
                             onClick={writeCountry}
                         >
                             Confirm

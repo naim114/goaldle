@@ -1,8 +1,9 @@
 import React from 'react';
 import { Button, Grid, TextField } from '@mui/material';
+import Dashboard from './Dashboard';
 import ManageSettings from './ManageSettings';
 import ManageCountry from './ManageCountry';
-import Dashboard from './Dashboard';
+import ManageLeague from './ManageLeague';
 
 function Backdoor(props) {
     const [val, setVal] = React.useState('');
@@ -105,6 +106,12 @@ function Backdoor(props) {
                                 } else if (drawer === 'country') {
                                     return (
                                         <ManageCountry
+                                            onRefresh={() => setDrawer('dashboard')}
+                                        />
+                                    )
+                                } else if (drawer === 'league') {
+                                    return (
+                                        <ManageLeague
                                             onRefresh={() => setDrawer('dashboard')}
                                         />
                                     )
