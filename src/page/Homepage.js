@@ -19,6 +19,8 @@ import GoaldleTableRow from '../components/GoaldleTableRow';
 import ResultModal from '../components/ResultModal';
 import GoaldleAutocomplete from '../components/GoaldleAutocomplete';
 
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
+
 function Homepage() {
     const [playerX, setPlayerX] = React.useState(null);
 
@@ -32,6 +34,7 @@ function Homepage() {
     const [label, setLabel] = React.useState("Select a player");
     const [game, setGame] = React.useState(false);
     const [score, setScore] = React.useState('');
+    const [pathBlank, setPathBlank] = React.useState(null);
 
     const getPlayerX = async () => {
         // get playerX id on settings
@@ -65,6 +68,17 @@ function Homepage() {
             );
             // console.log(data);
             setPlayerX(data);
+
+            // set blank image
+            const storage = getStorage();
+            getDownloadURL(ref(storage, `player/${data.id}/blank.png`))
+                .then((url) => {
+                    setPathBlank(url);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+
             return data;
         } else {
             // doc.data() will be undefined in this case
@@ -75,7 +89,7 @@ function Homepage() {
 
     React.useEffect(() => {
         getPlayerX();
-    }, []);
+    }, [playerX]);
 
     const addGuess = (player) => {
         if (guess.length < 8 && !game) {
@@ -171,11 +185,16 @@ function Homepage() {
                     <GoaldleLogo />
                     <Divider style={{ width: '80%', marginBottom: '30px' }} sx={{ borderBottomWidth: 3, borderColor: 'white' }} />
                     {
-                        playerX === null
+                        playerX === null || pathBlank === null
                             ?
                             <CircularProgress />
                             :
-                            <img src={require(`../assets/players/${playerX.id}/blank.png`)} alt={"Player X"} height={'250px'} style={{ marginBottom: '20px' }} />
+                            <img
+                                src={pathBlank}
+                                alt={"Player X"}
+                                height={'250px'}
+                                style={{ marginBottom: '20px' }}
+                            />
                     }
                     <Typography variant="h5">
                         Can you guess this

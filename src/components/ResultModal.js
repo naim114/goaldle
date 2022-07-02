@@ -1,4 +1,6 @@
-import { Box, Modal, Typography, Divider, Button } from '@mui/material';
+import { Box, Modal, Typography, Divider, Button, CircularProgress } from '@mui/material';
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import React from 'react';
 
 const style = {
     position: 'absolute',
@@ -18,13 +20,35 @@ function ResultModal(props) {
     const result = props.result;
     const guess = props.guess;
 
+    const [pathOri, setPathOri] = React.useState(null);
+
+    React.useEffect(() => {
+        // set ori image
+        const storage = getStorage();
+
+        getDownloadURL(ref(storage, `player/${playerX.id}/ori.png`))
+            .then((url) => {
+                setPathOri(url);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, [])
+
+
     return (
         <Modal
             open={props.open}
             onClose={props.onClose}
         >
             <Box sx={style}>
-                <img src={require(`../assets/players/${playerX.id}/ori.png`)} alt={playerX.name} width={'150px'} style={{ marginBottom: '20px' }} />
+                {
+                    playerX === null || pathOri === null
+                        ?
+                        <CircularProgress />
+                        :
+                        <img src={pathOri} alt={playerX.name} width={'150px'} style={{ marginBottom: '20px' }} />
+                }
                 <Divider style={{ width: '100%', marginBottom: '30px' }} sx={{ borderBottomWidth: 3, borderColor: 'black' }} />
                 <Typography variant="h6" component="h6">
                     {result ? "Correct!" : "Sorry Player X is"}
