@@ -16,7 +16,6 @@ export default function GoaldleAutocomplete(props) {
         let players = [];
 
         const querySnapshot = await getDocs(query(collection(db, "Player"), orderBy("name", "asc")));
-        // const querySnapshot = await getDocs(collection(db, "Player"));
 
         querySnapshot.forEach(async (doc) => {
             let player = await fetchPlayer(doc.id);

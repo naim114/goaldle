@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography, Select, MenuItem, Button, LinearProgress, Box, Modal, TextField } from '@mui/material';
+import { Card, CardContent, Typography, Select, MenuItem, Button, LinearProgress, Box, Modal, TextField, FormControl, InputLabel } from '@mui/material';
 import React from 'react';
 import { collection, orderBy, getDocs, query, doc, getDoc, setDoc, deleteDoc, addDoc } from "firebase/firestore";
 import { db } from '../utils/firebase';
@@ -271,18 +271,21 @@ function ManageCountry(props) {
                             Filled in all field and press CONFIRM to add data.
                         </Typography>
                         <TextField value={newCountry.name} onChange={(e) => setNewCountry({ ...newCountry, name: e.target.value })} name='name' label="Enter Name" variant="outlined" style={{ width: '100%', marginBottom: '10px' }} />
-                        <Select
-                            name='continent'
-                            value={newCountry.continent}
-                            style={{ width: '100%', marginBottom: '30px' }}
-                            onChange={(e) => setNewCountry({ ...newCountry, continent: e.target.value })}
-                        >
-                            <MenuItem value={"Africa"}>Africa</MenuItem>
-                            <MenuItem value={"America"}>America</MenuItem>
-                            <MenuItem value={"Asia"}>Asia</MenuItem>
-                            <MenuItem value={"Europe"}>Europe</MenuItem>
-                            <MenuItem value={"Oceania"}>Oceania</MenuItem>
-                        </Select>
+                        <FormControl fullWidth>
+                            <InputLabel>Select Continent</InputLabel>
+                            <Select
+                                value={newCountry.continent}
+                                label="Select Continent"
+                                onChange={(e) => setNewCountry({ ...newCountry, continent: e.target.value })}
+                                style={{ width: '100%', marginBottom: '30px' }}
+                            >
+                                <MenuItem value={"Africa"}>Africa</MenuItem>
+                                <MenuItem value={"America"}>America</MenuItem>
+                                <MenuItem value={"Asia"}>Asia</MenuItem>
+                                <MenuItem value={"Europe"}>Europe</MenuItem>
+                                <MenuItem value={"Oceania"}>Oceania</MenuItem>
+                            </Select>
+                        </FormControl>
                         <Button
                             color="secondary"
                             variant="contained"

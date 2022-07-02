@@ -5,6 +5,7 @@ import ManageSettings from './ManageSettings';
 import ManageCountry from './ManageCountry';
 import ManageLeague from './ManageLeague';
 import ManageTeam from './ManageTeam';
+import ManagePlayer from './ManagePlayer';
 
 function Backdoor(props) {
     const [val, setVal] = React.useState('');
@@ -119,6 +120,12 @@ function Backdoor(props) {
                                 } else if (drawer === 'team') {
                                     return (
                                         <ManageTeam
+                                            onRefresh={() => setDrawer('dashboard')}
+                                        />
+                                    )
+                                } else if (drawer === 'player') {
+                                    return (
+                                        <ManagePlayer
                                             onRefresh={() => setDrawer('dashboard')}
                                         />
                                     )
