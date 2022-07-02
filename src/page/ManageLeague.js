@@ -1,6 +1,6 @@
 import { Card, CardContent, Typography, Select, MenuItem, Button, LinearProgress, Box, Modal, TextField, FormControl, InputLabel, CircularProgress } from '@mui/material';
 import React from 'react';
-import { collection, orderBy, getDocs, query, doc, getDoc, setDoc, deleteDoc, updateDoc, deleteField, addDoc } from "firebase/firestore";
+import { collection, orderBy, getDocs, query, doc, getDoc, setDoc, deleteDoc, addDoc } from "firebase/firestore";
 import { db } from '../utils/firebase';
 import { Player } from '../utils/model/player';
 import { fetchTeam, fetchCountry, fetchLeague } from '../utils/controller';
@@ -189,7 +189,6 @@ function ManageLeague(props) {
             return false;
         }
 
-        setLoading(true);
         if (e.target.id === 'add') {
             // if there is empty field
             if (
@@ -198,6 +197,7 @@ function ManageLeague(props) {
             ) {
                 return false;
             }
+            setLoading(true);
 
             // update to db
             console.log("Adding " + newData.name);
@@ -222,6 +222,7 @@ function ManageLeague(props) {
             ) {
                 return false;
             }
+            setLoading(true);
 
             // update to db
             console.log("Editing " + select.id);
@@ -237,6 +238,7 @@ function ManageLeague(props) {
                 console.log(error);
             }
         } else if (e.target.id === 'delete') {
+            setLoading(true);
             console.log("Deleting " + select.id);
             try {
                 await deleteDoc(doc(db, "League", select.id));

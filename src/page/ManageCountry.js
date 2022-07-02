@@ -153,7 +153,6 @@ function ManageCountry(props) {
             return false;
         }
 
-        setLoading(true);
         if (e.target.id === 'add') {
             // if there is empty field
             if (
@@ -162,6 +161,7 @@ function ManageCountry(props) {
             ) {
                 return false;
             }
+            setLoading(true);
 
             // update to db
             console.log("Adding " + newCountry.name);
@@ -187,6 +187,7 @@ function ManageCountry(props) {
             ) {
                 return false;
             }
+            setLoading(true);
 
             // update to db
             console.log("Editing " + select.id);
@@ -202,6 +203,7 @@ function ManageCountry(props) {
                 console.log(error);
             }
         } else if (e.target.id === 'delete') {
+            setLoading(true);
             console.log("Deleting " + select.id);
             try {
                 await deleteDoc(doc(db, "Country", select.id));

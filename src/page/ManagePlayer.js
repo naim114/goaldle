@@ -6,6 +6,7 @@ import { Player } from '../utils/model/player';
 import { fetchTeam, fetchCountry, fetchLeague, fetchPlayer } from '../utils/controller';
 import DataTable from 'react-data-table-component';
 import ActionIconButton from '../components/EditIconButton';
+import { getStorage, ref, uploadBytes } from "firebase/storage";
 
 function ManagePlayer(props) {
     const [loading, setLoading] = React.useState(false);
@@ -118,6 +119,14 @@ function ManagePlayer(props) {
     }, []);
 
     // Add
+    const [blankFile, setBlankFile] = React.useState("");
+    function handleChangeBlank(event) {
+        setBlankFile(event.target.files[0]);
+    }
+    const [oriFile, setOriFile] = React.useState("");
+    function handleChangeOri(event) {
+        setOriFile(event.target.files[0]);
+    }
     const [newData, setNewData] = React.useState({
         age: '',
         country: 'hoNSbItgD2pZLeP9GErp',
@@ -138,6 +147,8 @@ function ManagePlayer(props) {
             position: 'Goalkeeper',
             team: '4CWTyP5nDZUxz4pg2JHZ',
         });
+        setOriFile("");
+        setBlankFile("");
     };
 
     // Datatable 
@@ -196,40 +207,67 @@ function ManagePlayer(props) {
             return false;
         }
 
-        setLoading(true);
-        // if (e.target.id === 'add') {
-        //     // if there is empty field
-        //     if (
-        //         newData.name === '' ||
-        //         newData.team === '' ||
-        //         newData.position === '' ||
-        //         newData.country === '' ||
-        //         newData.age === '' ||
-        //         newData.number === ''
-        //     ) {
-        //         return false;
-        //     }
+        if (e.target.id === 'add') {
+            console.log("Ha fax");
+            // if there is empty field
+            if (
+                newData.name === '' ||
+                newData.team === '' ||
+                newData.position === '' ||
+                newData.country === '' ||
+                newData.age === '' ||
+                newData.number === ''
+            ) {
+                return false;
+            }
 
-        //     // update to db
-        //     console.log("Adding " + newData.name);
-        //     try {
-        //         const docRef = await addDoc(collection(db, "Player"), {
-        //             age: newData.age,
-        //             country: newData.country,
-        //             name: newData.name,
-        //             number: newData.number,
-        //             position: newData.position,
-        //             team: newData.team,
-        //         });
+            if (!blankFile) {
+                alert("Please upload player's blank image first!");
+                return false;
+            }
 
-        //         console.log("Document written with ID: ", docRef.id);
-        //         handleCloseAdd();
-        //         console.log("Added " + newData.name + " to Firestore");
-        //         handleRefresh();
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        // }
+            if (!oriFile) {
+                alert("Please upload player's original image first!");
+                return false;
+            }
+
+            setLoading(true);
+
+            // update to db
+            console.log("Adding " + newData.name);
+            try {
+                // init data to firestore
+                const docRef = await addDoc(collection(db, "Player"), {
+                    age: newData.age,
+                    country: newData.country,
+                    name: newData.name,
+                    number: newData.number,
+                    position: newData.position,
+                    team: newData.team,
+                });
+
+                console.log("Document written with ID: ", docRef.id);
+                console.log("Added " + newData.name + " to Firestore");
+
+                // init data to storage
+                const storage = getStorage();
+
+                // upload blank image
+                uploadBytes(ref(storage, `player/${docRef.id}/blank.png`), blankFile).then((snapshot) => {
+                    console.log('Uploaded blank image!!');
+                });
+
+                // upload ori image
+                uploadBytes(ref(storage, `player/${docRef.id}/ori.png`), oriFile).then((snapshot) => {
+                    console.log('Uploaded ori image!!');
+                });
+
+                handleCloseAdd();
+                handleRefresh();
+            } catch (error) {
+                console.log(error);
+            }
+        }
 
         // else if (e.target.id === 'edit') {
         //     console.log('edit');
@@ -299,7 +337,7 @@ function ManagePlayer(props) {
                             Add Player
                         </Typography>
                         <Typography sx={{ mt: 2, marginBottom: '20px' }}>
-                            Filled in all field and press CONFIRM to add data.
+                            Filled in all field and press CONFIRM to add data. Blank and original image has to be lower than 2MB and in png format.
                         </Typography>
                         <TextField value={newData.name} onChange={(e) => setNewData({ ...newData, name: e.target.value })} label="Enter Name" variant="outlined" style={{ width: '100%', marginBottom: '10px' }} />
                         {teamList.length === 0
@@ -353,9 +391,32 @@ function ManagePlayer(props) {
                             </FormControl>
                         }
                         <TextField value={newData.age} onChange={(e) => setNewData({ ...newData, age: e.target.value })} label="Enter Age" variant="outlined" style={{ width: '100%', marginBottom: '10px' }} />
-                        <TextField value={newData.number} onChange={(e) => setNewData({ ...newData, number: e.target.value })} label="Enter Number" variant="outlined" style={{ width: '100%', marginBottom: '30px' }} />
+                        <TextField value={newData.number} onChange={(e) => setNewData({ ...newData, number: e.target.value })} label="Enter Number" variant="outlined" style={{ width: '100%', marginBottom: '10px' }} />
+                        <Button
+                            variant="contained"
+                            component="label"
+                            style={{ width: '100%', marginBottom: '10px' }}
+                        >
+                            Upload Blank Image
+                            <input
+                                onChange={handleChangeBlank}
+                                type="file"
+                                hidden
+                            />
+                        </Button>
+                        <Button
+                            variant="contained"
+                            component="label"
+                            style={{ width: '100%', marginBottom: '30px' }}
+                        >
+                            Upload Original Image
+                            <input
+                                onChange={handleChangeOri}
+                                type="file"
+                                hidden
+                            />
+                        </Button>
                         {/* TODO upload picture ori */}
-                        {/* TODO upload picture blank */}
                         <Button
                             color="secondary"
                             variant="contained"

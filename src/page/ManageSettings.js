@@ -98,6 +98,7 @@ function ManageSettings(props) {
             } catch (e) {
                 console.error(e);
             }
+            setLoading(false);
         }
     }
 

@@ -196,7 +196,6 @@ function ManageTeam(props) {
             return false;
         }
 
-        setLoading(true);
         if (e.target.id === 'add') {
             // if there is empty field
             if (
@@ -205,6 +204,7 @@ function ManageTeam(props) {
             ) {
                 return false;
             }
+            setLoading(true);
 
             // update to db
             console.log("Adding " + newData.name);
@@ -231,6 +231,7 @@ function ManageTeam(props) {
             ) {
                 return false;
             }
+            setLoading(true);
 
             // update to db
             console.log("Editing " + select.id);
@@ -247,6 +248,7 @@ function ManageTeam(props) {
             }
         }
         else if (e.target.id === 'delete') {
+            setLoading(true);
             console.log("Deleting " + select.id);
             try {
                 await deleteDoc(doc(db, "Team", select.id));
@@ -259,6 +261,7 @@ function ManageTeam(props) {
         }
         setLoading(false);
     }
+
     return teamList.length === 0 || loading === true
         ?
         <LinearProgress />
