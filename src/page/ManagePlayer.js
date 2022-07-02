@@ -3,10 +3,10 @@ import React from 'react';
 import { collection, orderBy, getDocs, query, doc, getDoc, setDoc, deleteDoc, addDoc } from "firebase/firestore";
 import { db } from '../utils/firebase';
 import { Player } from '../utils/model/player';
-import { fetchTeam, fetchCountry, fetchLeague, fetchPlayer } from '../utils/controller';
+import { fetchTeam, fetchCountry, fetchPlayer } from '../utils/controller';
 import DataTable from 'react-data-table-component';
 import ActionIconButton from '../components/EditIconButton';
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 
 function ManagePlayer(props) {
     const [loading, setLoading] = React.useState(false);
@@ -27,6 +27,19 @@ function ManagePlayer(props) {
         direction: 'column',
         overflow: 'scroll',
         display: 'block',
+    };
+
+    const deleteStyle = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '80%',
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+        direction: 'column',
     };
 
     const [pathBlank, setPathBlank] = React.useState(null);
@@ -408,18 +421,30 @@ function ManagePlayer(props) {
                 console.log(error);
             }
         }
+        else if (e.target.id === 'delete') {
+            setLoading(true);
+            console.log("Deleting " + newData.id);
+            try {
+                await deleteDoc(doc(db, "Player", newData.id));
+                handleRefresh();
+                handleCloseDelete();
+                console.log("Deleted " + newData.id + " in Firestore");
 
-        // else if (e.target.id === 'delete') {
-        //     console.log("Deleting " + select.id);
-        //     try {
-        //         await deleteDoc(doc(db, "Team", select.id));
-        //         handleRefresh();
-        //         handleCloseDelete();
-        //         console.log("Deleted " + select.id + " in Firestore");
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        // }
+                deleteObject(ref(storage, `player/${newData.id}/ori.png`)).then(() => {
+                    console.log("Deleted ori image");
+                }).catch((error) => {
+                    console.log(error);
+                });
+
+                deleteObject(ref(storage, `player/${newData.id}/blank.png`)).then(() => {
+                    console.log("Deleted blank image");
+                }).catch((error) => {
+                    console.log(error);
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        }
         setLoading(false);
     }
 
@@ -669,7 +694,32 @@ function ManagePlayer(props) {
                             Confirm
                         </Button>
                     </Box>
+                </Modal>{/* Delete Modal */}
+                <Modal
+                    open={openDelete}
+                    onClose={handleCloseDelete}
+                >
+                    <Box sx={deleteStyle}>
+                        <Typography variant="h6" component="h2">
+                            Delete Player
+                        </Typography>
+                        <Typography sx={{ mt: 2, marginBottom: '20px' }}>
+                            After delete the data can't be retrieve back. To Delete enter <b>{newData.name}</b> in the field then click CONFIRM.
+                        </Typography>
+                        <TextField onChange={(e) => chekingDelete(e.target.value)} name='name' variant="outlined" style={{ width: '100%', marginBottom: '10px' }} />
+                        <Button
+                            color="error"
+                            variant="contained"
+                            id={'delete'}
+                            disabled={deleteCheck}
+                            onClick={writeData}
+                            disable={loading}
+                        >
+                            Confirm
+                        </Button>
+                    </Box>
                 </Modal>
+
             </div>
         );
 }
