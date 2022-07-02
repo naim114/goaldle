@@ -293,6 +293,7 @@ function ManageCountry(props) {
                             variant="contained"
                             id={'add'}
                             onClick={writeCountry}
+                            disable={loading}
                         >
                             Confirm
                         </Button>
@@ -328,6 +329,7 @@ function ManageCountry(props) {
                             variant="contained"
                             id={'edit'}
                             onClick={writeCountry}
+                            disable={loading}
                         >
                             Confirm
                         </Button>
@@ -352,6 +354,7 @@ function ManageCountry(props) {
                             id={'delete'}
                             disabled={deleteCheck}
                             onClick={writeCountry}
+                            disable={loading}
                         >
                             Confirm
                         </Button>

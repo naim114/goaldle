@@ -153,6 +153,7 @@ function ManageSettings(props) {
                                         color="secondary"
                                         variant="contained"
                                         onClick={updatePlayerX}
+                                        disable={loading}
                                     >
                                         Confirm
                                     </Button>

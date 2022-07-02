@@ -318,6 +318,7 @@ function ManageTeam(props) {
                             variant="contained"
                             id={'add'}
                             onClick={writeData}
+                            disable={loading}
                         >
                             Confirm
                         </Button>
@@ -359,6 +360,7 @@ function ManageTeam(props) {
                             variant="contained"
                             id={'edit'}
                             onClick={writeData}
+                            disable={loading}
                         >
                             Confirm
                         </Button>
@@ -383,6 +385,7 @@ function ManageTeam(props) {
                             id={'delete'}
                             disabled={deleteCheck}
                             onClick={writeData}
+                            disable={loading}
                         >
                             Confirm
                         </Button>
