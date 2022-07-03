@@ -1,6 +1,7 @@
-import { collection, getDocs, doc, runTransaction, orderBy, query } from "firebase/firestore";
-import { db } from '../../../utils/firebase';
+const {
+  getFirestore, collection, getDocs, doc, runTransaction, orderBy, query } = require("firebase/firestore");
 
+const { initializeApp } = require("firebase/app");
 const { schedule } = require('@netlify/functions');
 
 // To learn about scheduled functions and supported cron extensions,
@@ -9,6 +10,22 @@ module.exports.handler = schedule('@hourly', async (event) => {
   console.log('======================================================');
   // get all players id
   let players = [];
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDOOa_4kXyQ2Fqsvg9HDpmEDa_QHz7riCY",
+    authDomain: "goaldle.firebaseapp.com",
+    projectId: "goaldle",
+    storageBucket: "goaldle.appspot.com",
+    messagingSenderId: "1057267795639",
+    appId: "1:1057267795639:web:e8c78acaa7271919762f32",
+    measurementId: "G-TX3HQM4DJN"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+
+  // Initialize Firestore
+  const db = getFirestore(app);
 
   const querySnapshot = await getDocs(query(collection(db, "Player"), orderBy("name", "asc")));
 

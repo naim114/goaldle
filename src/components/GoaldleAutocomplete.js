@@ -11,7 +11,6 @@ import { Player } from '../utils/model/player';
 
 export default function GoaldleAutocomplete(props) {
     const [playerList, setPlayerList] = React.useState([]);
-
     const getPlayers = async () => {
         let players = [];
 
@@ -25,23 +24,7 @@ export default function GoaldleAutocomplete(props) {
         setPlayerList(players);
     }
 
-    // get team
-    const [teamList, setTeamList] = React.useState([]);
-    const getTeam = async () => {
-        let datas = [];
-
-        const querySnapshot = await getDocs(query(collection(db, "Team"), orderBy("name", "asc")));
-
-        querySnapshot.forEach(async (doc) => {
-            let data = await fetchTeam(doc.id);
-            datas.push(data);
-        });
-
-        setTeamList(datas);
-    }
-
     const [playerX, setPlayerX] = React.useState(null);
-
     const getPlayerX = async () => {
         // get playerX id on settings
         let playerX = '';
@@ -83,9 +66,8 @@ export default function GoaldleAutocomplete(props) {
     }
 
     React.useEffect(() => {
-        getPlayerX();
         getPlayers();
-        getTeam();
+        getPlayerX();
     }, []);
 
     const handleChange = (event, values) => {
