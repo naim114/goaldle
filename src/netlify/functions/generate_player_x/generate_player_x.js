@@ -1,6 +1,4 @@
-const {
-  getFirestore, collection, getDocs, doc, runTransaction, orderBy, query } = require("firebase/firestore");
-
+const { getFirestore, collection, getDocs, doc, runTransaction, orderBy, query } = require("firebase/firestore");
 const { initializeApp } = require("firebase/app");
 const { schedule } = require('@netlify/functions');
 
