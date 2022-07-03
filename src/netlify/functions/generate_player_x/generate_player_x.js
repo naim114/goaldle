@@ -6,6 +6,9 @@ const { schedule } = require('@netlify/functions');
 // see: https://ntl.fyi/sched-func
 module.exports.handler = schedule('@hourly', async (event) => {
   console.log('======================================================');
+  console.log("GENERATE PLAYER X");
+  console.log(`UTC: ${new Date().toUTCString()}`);
+
   // get all players id
   let players = [];
 
@@ -46,8 +49,6 @@ module.exports.handler = schedule('@hourly', async (event) => {
   } catch (e) {
     console.error(e);
   }
-
-
 
   const eventBody = JSON.parse(event.body);
   console.log(`Next function run at ${eventBody.next_run}.`);

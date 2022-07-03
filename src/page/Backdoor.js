@@ -14,8 +14,8 @@ function Backdoor(props) {
 
     const handleChange = (e) => {
         setVal(e.target.value);
-        if (e.target.value === `A`) {
-            // if (e.target.value === `desdemonaOTHELLO${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}ALPHAomega`) {
+        // if (e.target.value === `A`) {
+        if (e.target.value === `desdemonaOTHELLO${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}ALPHAomega`) {
             console.log("You really should'nt be here :)");
             setEnter(true);
         }
