@@ -85,7 +85,7 @@ function ManageSettings(props) {
 
             const docRef = doc(db, "Settings", "settings_mystery_player");
             try {
-                const newPlayerX = await runTransaction(db, async (transaction) => {
+                await runTransaction(db, async (transaction) => {
                     const targetDoc = await transaction.get(docRef);
                     if (!targetDoc.exists()) {
                         throw "Document does not exist!";
