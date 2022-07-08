@@ -1,4 +1,4 @@
-const { getFirestore, collection, getDocs, doc, runTransaction, orderBy, query } = require("firebase/firestore");
+const { getFirestore, collection, getDocs, doc, runTransaction, orderBy, query, getDoc } = require("firebase/firestore");
 const { initializeApp } = require("firebase/app");
 const { schedule } = require('@netlify/functions');
 
@@ -12,6 +12,7 @@ module.exports.handler = schedule('@daily', async (event) => {
   // get all players id
   let players = [];
 
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyDOOa_4kXyQ2Fqsvg9HDpmEDa_QHz7riCY",
     authDomain: "goaldle.firebaseapp.com",
@@ -28,14 +29,36 @@ module.exports.handler = schedule('@daily', async (event) => {
   // Initialize Firestore
   const db = getFirestore(app);
 
-  const querySnapshot = await getDocs(query(collection(db, "Player"), orderBy("name", "asc")));
+  let player = null;
+  let playerID = null;
 
-  querySnapshot.forEach(async (doc) => {
-    players.push(doc.id);
-  });
-  let random = players[Math.floor(Math.random() * players.length)];
-  console.log("Selected random players: " + random);
+  do {
+    // Get list of all player
+    const querySnapshot = await getDocs(query(collection(db, "Player"), orderBy("name", "asc")));
+    querySnapshot.forEach(async (doc) => {
+      players.push(doc.id);
+    });
 
+    // Get random player
+    let random = players[Math.floor(Math.random() * players.length)];
+    console.log("Selected random players id before inspection: " + random);
+
+    // Get min player show count
+    const playerDoc = await getDoc(doc(db, "Player", random));
+    if (playerDoc.exists()) {
+      player = playerDoc.data();
+      playerID = playerDoc.id;
+      console.log("Player Count: " + player.showCount);
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("Player not found");
+      return false;
+    }
+  } while (player.showCount == 1);
+
+  console.log("Selected players: " + playerID);
+
+  // Update player id in settings
   const docRef = doc(db, "Settings", "settings_mystery_player");
   try {
     await runTransaction(db, async (transaction) => {
@@ -43,9 +66,24 @@ module.exports.handler = schedule('@daily', async (event) => {
       if (!targetDoc.exists()) {
         throw "Document does not exist!";
       }
-      transaction.update(docRef, { id: random });
+      transaction.update(docRef, { id: playerID });
     });
-    console.log("Player X updated to " + random);
+    console.log("Player X updated to " + playerID);
+  } catch (e) {
+    console.error(e);
+  }
+
+  // Update show count at player doc
+  const playerDocRef = doc(db, "Player", playerID);
+  try {
+    await runTransaction(db, async (transaction) => {
+      const targetDoc = await transaction.get(playerDocRef);
+      if (!targetDoc.exists()) {
+        throw "Document does not exist!";
+      }
+      transaction.update(playerDocRef, { showCount: 1 });
+    });
+    console.log("Player X show count updated to " + 1);
   } catch (e) {
     console.error(e);
   }
