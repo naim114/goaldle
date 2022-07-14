@@ -17,6 +17,7 @@ function HTPModal(props) {
         <Modal
             open={props.open}
             onClose={props.onClose}
+            onClick={props.onClose}
         >
             <Box sx={style}>
                 <Typography variant="h6" component="h2" style={{ textAlign: 'center' }}>

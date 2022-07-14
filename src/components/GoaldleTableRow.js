@@ -64,32 +64,36 @@ function GoaldleTableRow(props) {
 
     React.useEffect(() => {
         // check age
-        if (((playerX.age - player.age) <= 2 && (playerX.age - player.age) > 0) || ((player.age - playerX.age) <= 2 && (player.age - playerX.age) > 0)) {
+        if (((parseInt(playerX.age) - parseInt(player.age)) <= 2 && (parseInt(playerX.age) - parseInt(player.age)) > 0) || ((parseInt(player.age) - parseInt(playerX.age)) <= 2 && (parseInt(player.age) - parseInt(playerX.age)) > 0)) {
             setAgeStyle(warningStyle);
         }
 
-        if (playerX.age < player.age) {
-            setAge(`${player.age}  ↓`);
-        } else if (playerX.age > player.age) {
-            setAge(`${player.age}  ↑`);
-        } else if (player.age === playerX.age) {
+        if (parseInt(playerX.age) < parseInt(player.age)) {
+            setAge(`${parseInt(player.age)}  ↓`);
+        } else if (parseInt(playerX.age) > parseInt(player.age)) {
+            setAge(`${parseInt(player.age)}  ↑`);
+        } else if (parseInt(player.age) === parseInt(playerX.age)) {
             setAgeStyle(successStyle);
-            setAge(`${player.age}`);
+            setAge(`${parseInt(player.age)}`);
         } else {
             setAge('None');
         }
 
-        if (((playerX.number - player.number) <= 2 && (playerX.number - player.number) > 0) || ((player.number - playerX.number) <= 2 && (player.number - playerX.number) > 0)) {
+        if (((parseInt(playerX.number) - parseInt(player.number)) <= 2 && (parseInt(playerX.number) - parseInt(player.number)) > 0) || ((parseInt(player.number) - parseInt(playerX.number)) <= 2 && (parseInt(player.number) - parseInt(playerX.number)) > 0)) {
             setNumberStyle(warningStyle);
         }
         // check number
-        if (player.number > playerX.number) {
-            setNumber(`${player.number}  ↑`);
-        } else if (player.number < playerX.number) {
-            setNumber(`${player.number}  ↓`);
-        } else if (player.number === playerX.number) {
+        if (parseInt(player.number) > parseInt(playerX.number)) {
+            console.log("Go Lower");
+            console.log(`${parseInt(player.number)} > ${parseInt(playerX.number)}`);
+            setNumber(`${parseInt(player.number)}  ↓`);
+        } else if (parseInt(player.number) < parseInt(playerX.number)) {
+            console.log("Go Higher");
+            console.log(`${parseInt(player.number)} < ${parseInt(playerX.number)}`);
+            setNumber(`${parseInt(player.number)}  ↑`);
+        } else if (parseInt(player.number) === parseInt(playerX.number)) {
             setNumberStyle(successStyle);
-            setNumber(`${player.number}`);
+            setNumber(`${parseInt(player.number)}`);
         } else {
             setNumber('None');
         }
