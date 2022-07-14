@@ -84,12 +84,8 @@ function GoaldleTableRow(props) {
         }
         // check number
         if (parseInt(player.number) > parseInt(playerX.number)) {
-            console.log("Go Lower");
-            console.log(`${parseInt(player.number)} > ${parseInt(playerX.number)}`);
             setNumber(`${parseInt(player.number)}  ↓`);
         } else if (parseInt(player.number) < parseInt(playerX.number)) {
-            console.log("Go Higher");
-            console.log(`${parseInt(player.number)} < ${parseInt(playerX.number)}`);
             setNumber(`${parseInt(player.number)}  ↑`);
         } else if (parseInt(player.number) === parseInt(playerX.number)) {
             setNumberStyle(successStyle);
